@@ -819,8 +819,8 @@ double ElasticXS_Sin_ed(double theta)//dtheta
     double sig_0 = BornXS_dQ(theta) * jacob_sin;
 
 
-    //double sig_Fs = sig_rad_3_dtheta(theta);
-    double sig_Fs = sig_rad_3_dQ2(s,q2) * jacob_sin;
+    double sig_Fs = sig_rad_3_dtheta(theta);
+    //double sig_Fs = sig_rad_3_dQ2(s,q2) * jacob_sin;
     double sigma_AMM = dsigma_AMM_dqQ2(theta) * jacob_sin;
 
     double Efe = ElasticEnergy(theta);
@@ -849,33 +849,42 @@ public:
 
 double matrix_r(double s, double q2, double v, double tau, double phi)
 {
-    double x = s - q2 - v;
-    double lambda_y = Pow2(s - x) + 4.0 * M2 * q2;
+    double x = s - q2;
+    double Sp = s + x;//Eq.(35)
+    double lambda_q = Pow2(v + q2) + 4.0 * M2 * q2;
 
-    double tau_max = (s - x + Sqrt(lambda_y)) / 2.0 / M2;
-    double tau_min = (s - x - Sqrt(lambda_y)) / 2.0 / M2;
+    double tau_max = (v + q2 + Sqrt(lambda_q)) / 2.0 / M2;
+    double tau_min = (v + q2 - Sqrt(lambda_q)) / 2.0 / M2;
 
     if (tau <= tau_min || tau >= tau_max) return 0.0;
 
-    double lambda_z = (tau - tau_min) * (tau_max - tau) * (s * x * q2 - M2 * Pow2(q2) - m2 * lambda_y);
+    double lambda_z = (tau - tau_min) * (tau_max - tau) * (s * (s - q2 - v) * q2 - M2 * Pow2(q2) - m2 * lambda_q);
     double slambda_z = (lambda_z > 0.0) ? Sqrt(lambda_z) : 0.0;
 
-    double z1 = (q2 * (s + x) + tau * (s * (s - x) + 2.0 * M2 * q2) - 2.0 * M * slambda_z * Cos(phi)) / lambda_y;
-    double z2 = (q2 * (s + x) + tau * (x * (s - x) - 2.0 * M2 * q2) - 2.0 * M * slambda_z * Cos(phi)) / lambda_y;
+    double z1 = (q2 * (s + (s - q2 - v)) + tau * (s * (q2 + v) + 2.0 * M2 * q2) - 2.0 * M * slambda_z * Cos(phi)) / lambda_q;
+    double z2 = (q2 * (s + (s - q2 - v)) + tau * ((s - q2 - v) * (q2 + v) - 2.0 * M2 * q2) - 2.0 * M * slambda_z * Cos(phi)) / lambda_q;
 
-    double F = 0.5 / pi / Sqrt(lambda_y);
-    double F_d = F / z1 / z2;
-    double F_1p = F / z1 + F / z2;
-    double F_2p = F * m2 * (1.0 / Pow2(z2) + 1.0 / Pow2(z1));
-    double F_2m = F * m2 * (1.0 / Pow2(z2) - 1.0 / Pow2(z1));
-    double F_IR = F_2p - (q2 + 2.0 * m2) * F_d;
+    double F = 0.5 / pi / Sqrt(lambda_q);
+    double Fd = F / z1 / z2;
+    double F1p = F / z1 + F / z2;
+    double F2p = F * m2 * (1.0 / Pow2(z2) + 1.0 / Pow2(z1));
+    double F2m = F * m2 * (1.0 / Pow2(z2) - 1.0 / Pow2(z1));
+    double FIR = F2p - (q2 + 2.0 * m2) * Fd;
 
-    double theta_11 = 4.0 * (q2 - 2.0 * m2) * F_IR;
-    double theta_12 = 4.0 * F_IR * tau;
-    double theta_13 = -4.0 * F - 2.0 * Pow2(tau) * F_d;
-    double theta_21 = 2.0 * (s * x - M2 * q2) * F_IR / M2;
-    double theta_22 = (2.0 * (s + x) * F_2m + (Pow2(s) - Pow2(x)) * F_1p + 2.0 * (s - x - 2.0 * M2 * tau) * F_IR - tau * Pow2(s + x) * F_d) / 2.0 / M2;
-    double theta_23 = (4.0 * M2 * F + (4.0 * m2 + 2.0 * M2 * Pow2(tau) - (s - x) * tau) * F_d - (s + x) * F_1p) / 2.0 / M2;
+    double theta_11 = 4.0 * (q2 - 2.0 * m2) * FIR;
+    double theta_12 = 4.0 * FIR * tau;
+    double theta_13 = - 4.0 * F - 2.0 * Pow2(tau) * Fd;
+    double theta_21 = 2. * ( s*x - M2*q2) * FIR/M2;
+    double theta_22 = (2. * (q2 - 2.*tau*M2 - 2.*(1.+tau)*s) * FIR + Sp * (q2*F1p + 2.*F2m - tau*Sp*Fd))/(2.*M2);
+    double theta_23 = ((tau * (2.*tau*M2 - q2) + 4.*m2) * Fd - Sp*F1p + 2.*(1.+tau)*(tau*Sp*Fd + x*F1p + FIR - F2m))/(2.*M2) + 2.*F;
+    double theta_24 = -tau * (1.+tau) * (F1p + (tau+2.)*Fd)/(2.*M2);   
+
+    //double theta_11 = 4.0 * (q2 - 2.0 * m2) * F_IR;
+    //double theta_12 = 4.0 * F_IR * tau;
+    //double theta_13 = -4.0 * F - 2.0 * Pow2(tau) * F_d;
+    //double theta_21 = 2.0 * (s * x - M2 * q2) * F_IR / M2;
+    //double theta_22 = (2.0 * (s + x) * F_2m + (Pow2(s) - Pow2(x)) * F_1p + 2.0 * (s - x - 2.0 * M2 * tau) * F_IR - tau * Pow2(s + x) * F_d) / 2.0 / M2;
+    //double theta_23 = (4.0 * M2 * F + (4.0 * m2 + 2.0 * M2 * Pow2(tau) - (s - x) * tau) * F_d - (s + x) * F_1p) / 2.0 / M2;
 
     double factor = 1.0 + tau;
     double r = v / factor;
@@ -890,9 +899,9 @@ double matrix_r(double s, double q2, double v, double tau, double phi)
     double W2 = 4. * M2 * A;
 
     double theta_1 = theta_11 / r + theta_12 + theta_13 * r;
-    double theta_2 = theta_21 / r + theta_22 + theta_23 * r;
+    double theta_2 = theta_21 / r + theta_22 + theta_23 * r + theta_24 * r * r;
 
-    double result = Pow6(e) / Pow2(t) * (-4.0 * pi) * Sqrt(lambda_y) * (theta_1 * W1 + theta_2 * W2) / r; // matrix, Eq(14),(15)
+    double result = Pow6(e) / Pow2(t) * (-4.0 * pi) * Sqrt(lambda_q) * (theta_1 * W1 + theta_2 * W2) / r; // matrix, Eq(14),(15)
 
     return result;
 }
