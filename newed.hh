@@ -212,7 +212,7 @@ void GCGMGQ_Model2(double Q2, double &gc, double &gm, double &gq)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void GCGMGQ_Model3(double qq, double &gc, double &gm, double &gq)
 {//Parker's Model
-    double q2 = fabs(qq);
+    double q2=qq*GeVtofm;
     double gc0 = 1.;
     double qc0 = 4.21;
     double gm0 = 1.714;
@@ -220,8 +220,8 @@ void GCGMGQ_Model3(double qq, double &gc, double &gm, double &gq)
     double gq0 = 25.83;
     double qq0 = 8.1;
     double ac[5] = {0.02708986,0.54510802,0.02708986,0.02708142,0.02708986};
-    double am[5] = {0.03189419,0.03189573,0.4433256,0.03189394,0.0318955};
-    double aq[5] = {0.04249515,0.04249517,0.0013469,0.04250929,0.51344307};
+    double am[5] = {0.04249515,0.04249517,0.0013469,0.04250929,0.51344307};
+    double aq[5] = {0.03189419,0.03189573,0.4433256,0.03189394,0.0318955};
     double sum1 = 1.0;
     double sum2 = 1.0;
     double sum3 = 1.0;
@@ -241,7 +241,7 @@ void GCGMGQ_Model3(double qq, double &gc, double &gm, double &gq)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void GCGMGQ_Model4(double qq, double &gc, double &gm, double &gq)
 {//JZ's refit of SOG
-    double q2 = fabs(qq);
+    double q2=qq*GeVtofm;
     double x = sqrt(q2);
     double gc0 = 1.0;
     double gm0 = 1.714;
