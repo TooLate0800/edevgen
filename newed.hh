@@ -180,7 +180,7 @@ void GCGMGQ_Model2(double Q2, double &gc, double &gm, double &gq)
 {//abbott_2000_2_Model
     double gev_to_inv_fm = 5.067730758534282;
     double q2=Q2*GeVtofm;
-    double eta = Q2 / (4. * Md*Md*0.000001);
+    double eta = Q2 / (4. * pow(Md*gev_to_inv_fm,2));
     double delta = pow((0.89852 * gev_to_inv_fm),2);
     double gq2 = 1. / pow((1. + q2 / (4. * delta)),2);
     double a[4] = {1.57057, 12.23792, -42.04576, 27.92014};
@@ -825,7 +825,7 @@ double ElasticXS_Sin_ed(double theta)//dtheta
 
     double Efe = ElasticEnergy(theta);
     double result = (1.0 + alpha_pi * (delta_VR(theta) + delta_vac(theta) - delta_inf(theta))) * sig_0 * Exp(alpha_pi * delta_inf(theta)) + sigma_AMM  + sig_Fs;
-    std::cout<<theta/deg<<" "<<result<<" "<<sig_0<<" "<<((1.0 + alpha_pi * (delta_VR(theta) + delta_vac(theta) - delta_inf(theta))) * sig_0 * Exp(alpha_pi * delta_inf(theta)) )/sig_0<<" "<<sigma_AMM/sig_0<<" "<<sig_Fs/sig_0<<std::endl;
+    //std::cout<<theta/deg<<" "<<result<<" "<<sig_0<<" "<<((1.0 + alpha_pi * (delta_VR(theta) + delta_vac(theta) - delta_inf(theta))) * sig_0 * Exp(alpha_pi * delta_inf(theta)) )/sig_0<<" "<<sigma_AMM/sig_0<<" "<<sig_Fs/sig_0<<std::endl;
     //std::cout<<theta/deg<<" "<<Efe<<" "<<result<<" "<<sig_0<<std::endl;
 
     return result;
