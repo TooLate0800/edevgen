@@ -109,6 +109,7 @@ double NonRadXS(double s, double q2);
 
 //double BornXS_Sin(double theta);
 //double ElasticXS_Sin(double theta);
+double BornXS_dQ(double theta);
 double BornXS_Sin_ed(double theta);
 double ElasticXS_Sin_ed(double theta);
 
@@ -746,7 +747,7 @@ double sig_rad_2_dtheta(double theta, double v)
     double tau_min = (v + q2 - Sqrt(lambda_q)) / 2.0 / M2;
 
     double pts[5] = {tau_min, 0.9*(tau_min+tau_max)/2., (tau_min+tau_max)/2., 1.1*(tau_min+tau_max)/2.,tau_max};
-    gsl_integration_qagp(&F, pts, 5, 0, 1e-7, 10000, w, &result, &error);//1.1GeV
+    gsl_integration_qagp(&F, pts, 5, 0, 1e-7, 10000, w, &result, &error);//1.1GeV & 2.2GeV
     //gsl_integration_qags(&F, tau_min, tau_max, 0, 1e-5, 1000, w, &result, &error);
     //gsl_integration_qags(&F, tau_min, tau_max, 0, 1e-6, 10000, w, &result, &error);
 
@@ -825,8 +826,10 @@ double ElasticXS_Sin_ed(double theta)//dtheta
 
     double Efe = ElasticEnergy(theta);
     double result = (1.0 + alpha_pi * (delta_VR(theta) + delta_vac(theta) - delta_inf(theta))) * sig_0 * Exp(alpha_pi * delta_inf(theta)) + sigma_AMM  + sig_Fs;
+    //result = result / jacob_sin;
+    //double result = (1.0 + alpha_pi * (delta_VR(theta) + delta_vac(theta) - delta_inf(theta))) * BornXS_dQ(theta) * Exp(alpha_pi * delta_inf(theta)) + dsigma_AMM_dqQ2(theta)  + sig_rad_3_dQ2(s,q2);
     //std::cout<<theta/deg<<" "<<result<<" "<<sig_0<<" "<<((1.0 + alpha_pi * (delta_VR(theta) + delta_vac(theta) - delta_inf(theta))) * sig_0 * Exp(alpha_pi * delta_inf(theta)) )/sig_0<<" "<<sigma_AMM/sig_0<<" "<<sig_Fs/sig_0<<std::endl;
-    //std::cout<<theta/deg<<" "<<Efe<<" "<<result<<" "<<sig_0<<std::endl;
+    //std::cout<<theta/deg<<"  "<<result<<"  "<<sig_0<<"  "<<result/sig_0<<"  "<<(result-sig_0 * Exp(alpha_pi * delta_inf(theta)))/sig_0<<std::endl;
 
     return result;
 }

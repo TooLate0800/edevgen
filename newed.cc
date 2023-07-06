@@ -87,7 +87,8 @@ int main()
         double e_ef = e_elastic - E_g_min;//maximal e_ef
         vf_e.SetPxPyPzE(Sqrt(Pow2(e_ef) - m2) * Sin(theta_e), 0, Sqrt(Pow2(e_ef) - m2) * Cos(theta_e), e_ef);
         v_min = (vi_e + vi_d - vf_e) * (vi_e + vi_d - vf_e) - M2;//maximal e_ef corresponds to minimal v
-        v_min = 0.001;//fixed for now
+        //v_min = 0.001;//fixed for now
+        //v_min = 0.001;//fixed for now
 
         if (E_g_cut < e_elastic - m)
             e_ef = e_elastic - E_g_cut;
@@ -106,9 +107,12 @@ int main()
         e_ef = e_elastic;
         vf_e.SetPxPyPzE(Sqrt(Pow2(e_ef) - m2) * Sin(theta_e), 0, Sqrt(Pow2(e_ef) - m2) * Cos(theta_e), e_ef);
         double q2 = -(vi_e - vf_e) * (vi_e - vf_e);
+        std::cout<<theta_e * 180.0 / pi<<" "<<q2<<" "<<xs_elastic_sin[i]<<" "<<xs_born_sin[i]<<std::endl;
+        //std::cout<<theta_e * 180.0 / pi<<" "<<q2<<" "<<xs_elastic_sin[i]<<" "<<BornXS_dQ(theta_e) * mkb<<std::endl;
         //std::cout<<theta_e * 180.0 / pi<<" "<<q2<<" "<<sigma_born<<" "<<sigma_elastic<<" "<<sigma_elastic / sigma_born<<std::endl;
         //printf("%8.6lf %10.4le %10.4le %10.4le %8.6lf\n", theta_e * 180.0 / pi, q2, sigma_born, sigma_elastic, sigma_elastic / sigma_born);
         fprintf(fp, "%8.6lf %12.6le %12.6le %12.6le %8.6lf\n", theta_e * 180.0 / pi, q2, sigma_born, sigma_elastic, sigma_elastic / sigma_born);
+        //std::cout<<"v_min  = "<<v_min<<"; v_cut = "<<v_cut<<std::endl;
     }
 
     fclose(fp);
@@ -240,6 +244,7 @@ int main()
     std::cout << xsint_born << " " << xsint  << " " << xsint_elastic << " "  << xsint_brems << " " << std::endl;
     std::cout <<"Ratio:"<<(xsint/xsint_born)-1.0<<std::endl;
 
+    std::cout<<"v_min  = "<<v_min<<"; v_cut = "<<v_cut<<std::endl;
     printf("beam energy:\n");
     printf("%lf MeV\n", Ei_e * 1000);
     printf("polar angle range:\n");
