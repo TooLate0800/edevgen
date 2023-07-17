@@ -667,7 +667,6 @@ double sig_rad_1_dtheta(double theta, double s, double q2, double v, double tau)
     double Sp = 2*s - q2;
 
     double lambda_s = s * s - 4.0 * m2 * M2;
-    double lambda_q = Pow2(v + q2) + 4.0 * M2 * q2;//==lambda_y
     double R = v/(1.+tau);
     double Q2tilde = q2 + R*tau;
    
@@ -675,6 +674,7 @@ double sig_rad_1_dtheta(double theta, double s, double q2, double v, double tau)
     double Q2_R = ( (s + 2. * M2)*( lambda_s - v * s) - lambda_s * (s - v)*Pow2(Cos(theta)) - 2. * M * Sqrt(lambda_s) * Sqrt(D) * Cos(theta))/(Pow2( s + 2. * M2) - lambda_s * Pow2(Cos(theta)));
 
     q2 = Q2_R;
+    double lambda_q = Pow2(v + q2) + 4.0 * M2 * q2;//==lambda_y
 
     double C1 = 4. * m2 * ( q2 + tau * (q2+v) - Pow2(tau) * M2)+ Pow2( q2 + tau * s );
     double C2 = 4. * m2 * ( q2 + tau * (q2+v) - Pow2(tau) * M2)+ Pow2( q2 + tau * (v-x) );
@@ -741,18 +741,6 @@ double sig_rad_2_dtheta(double theta, double v)
     F.params = &par;
 
     double x = s - q2;
-    double lambda_q = Pow2(v + q2) + 4.0 * M2 * q2;
-
-    double tau_max = (v + q2 + Sqrt(lambda_q)) / 2.0 / M2;
-    double tau_min = (v + q2 - Sqrt(lambda_q)) / 2.0 / M2;
-
-    double pts[5] = {tau_min, 0.9*(tau_min+tau_max)/2., (tau_min+tau_max)/2., 1.1*(tau_min+tau_max)/2.,tau_max};
-    gsl_integration_qagp(&F, pts, 5, 0, 1e-7, 10000, w, &result, &error);//1.1GeV & 2.2GeV
-    //gsl_integration_qags(&F, tau_min, tau_max, 0, 1e-5, 1000, w, &result, &error);
-    //gsl_integration_qags(&F, tau_min, tau_max, 0, 1e-6, 10000, w, &result, &error);
-
-    gsl_integration_workspace_free(w);
-
 
     double lambda_m = q2 * q2 + 4.0 * m2 * q2; // eq. (26)
     double slambda_m = Sqrt(lambda_m);
@@ -772,6 +760,14 @@ double sig_rad_2_dtheta(double theta, double v)
     double fac1 = (lambda_s - v * s - Q2_R * (s + 2. * M2))/( Pow2( s + 2. * M2) - lambda_s * Pow2(Cos(theta)) );
     double fac2 = ( s + 2. * M2)/(Cos(theta)) + M * Sqrt( lambda_s / D) * (s - v + 2.*m2); 
     double J_theta = - fac1 * fac2;
+    double lambda_q = Pow2(v + Q2_R) + 4.0 * M2 * Q2_R;
+
+    double tau_max = (v + Q2_R + Sqrt(lambda_q)) / 2.0 / M2;
+    double tau_min = (v + Q2_R - Sqrt(lambda_q)) / 2.0 / M2;
+
+    double pts[5] = {tau_min, 0.9*(tau_min+tau_max)/2., (tau_min+tau_max)/2., 1.1*(tau_min+tau_max)/2.,tau_max};
+    gsl_integration_qagp(&F, pts, 5, 0, 1e-6, 10000, w, &result, &error);//1.1GeV & 2.2GeV
+    gsl_integration_workspace_free(w);
     
     return sum1 + J_theta * result;
 }

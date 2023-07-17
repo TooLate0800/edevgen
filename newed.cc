@@ -3,7 +3,7 @@
 // Developer : Jingyi Zhou
 // Based on ###
 // History:
-//   Feb 2023, J. Zhou, ed event generator, lowest order radiative correction.
+//   July 2023, J. Zhou, ed event generator, lowest order radiative correction.
 //
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
